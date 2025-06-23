@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { authMiddleware } from "./middleware";
 import { JWT_SECRET } from "@workspace/backend-common/config";
 import { prisma } from "@workspace/prisma-client/prisma"
-import { signInschema, signUpSchema } from "@workspace/zod-validator/zod";
+import { createRoomSchema, signInschema, signUpSchema } from "@workspace/zod-validator/zod";
 import bcrypt from "bcryptjs"
 
 const app = express();
@@ -107,8 +107,45 @@ app.post("/signin", async (req, res) => {
 
 app.post("/room", authMiddleware, async (req: Request, res: Response) => {
 
-})
+    const user = await prisma.user.findUnique({
+        where: { id: req.userId }
+    });
 
+    if (!user) {
+        res.status(404).json({ msg: "User not found" });
+        return;
+    };
+
+    const result = createRoomSchema.safeParse(req.body);
+
+    if (!result.success) {
+        res.status(400).json({ msg: "Invalid input" })
+    };
+
+    const room = await prisma.room.findFirst({
+        where: {
+            slug: result.data?.slug
+        }
+    });
+
+    if (room) {
+        res.status(400).json({ msg: "Room already exists with this slug" })
+    };
+
+    try {
+        const newRoom = await prisma.room.create({
+            data: {
+                slug: result.data?.slug || "",
+                userId: user.id
+            }
+        });
+        res.status(200).json({ msg: "Room created successfully", newRoom })
+
+    } catch (error) {
+        console.error("Error creating room:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+})
 
 app.listen(3000, () => {
     console.log('Server is listening on the port 3000');
