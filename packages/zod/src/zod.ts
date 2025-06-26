@@ -1,4 +1,4 @@
-import * as z from "zod"
+import { z } from "zod"
 
 export const signUpSchema = z.object({
     email: z.string().email({ message: "Invalid email format" }),
@@ -15,7 +15,7 @@ export const signUpSchema = z.object({
 export const signInschema = z.object({
     email: z.string().email({ message: "Invalid email format" }),
     password: z.string()
-        .min(8, { message: 'Password must be at least 8 characters long' })
+        .min(6, { message: 'Password must be at least 6 characters long' })
         .max(20, { message: "Password must be at most 20 characters long" })
         .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
         .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })

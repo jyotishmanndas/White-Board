@@ -1,14 +1,17 @@
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { authMiddleware } from "./middleware";
+import { authMiddleware } from "./middleware.js";
 import { JWT_SECRET } from "@workspace/backend-common/config";
-import { prisma } from "@workspace/prisma-client/prisma"
+import { prisma } from "@workspace/db/prisma"
 import { createRoomSchema, signInschema, signUpSchema } from "@workspace/zod-validator/zod";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.post("/signup", async (req: Request, res: Response) => {
 
@@ -110,7 +113,6 @@ app.post("/room", authMiddleware, async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
         where: { id: req.userId }
     });
-
     if (!user) {
         res.status(404).json({ msg: "User not found" });
         return;
