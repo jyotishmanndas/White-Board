@@ -1,9 +1,9 @@
-import { JWT_SECRET } from "@workspace/backend-common/config";
 import jwt from "jsonwebtoken";
 import { prisma } from "@workspace/db/prisma";
-import { signInschema, signUpSchema } from "@workspace/zod-validator/zod";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import { signInschema, signUpSchema } from "@workspace/zod-validator/zod";
+import { JWT_SECRET } from "@workspace/backend-common/config";
 
 export const userSignup = async (req: Request, res: Response) => {
     const result = signUpSchema.safeParse(req.body);
@@ -48,7 +48,7 @@ export const userSignIn = async (req: Request, res: Response) => {
             where: { email: result.data.email }
         });
 
-        const userId = existingUser.id;
+        const userId = existingUser?.id;
 
         if (existingUser) {
             const isPasswordValid = await bcrypt.compare(result.data.password, existingUser.password);
