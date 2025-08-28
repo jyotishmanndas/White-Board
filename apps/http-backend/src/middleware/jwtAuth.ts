@@ -9,17 +9,13 @@ declare global {
             userId?: string;
         }
     }
-}
+};
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-
     const token = req.headers.authorization || "";
-
-    // if (!token || !token.startsWith("Bearer ")) {
-    //     res.status(401).json({ error: "token is invalid" })
-    // }
-
-    // const jwtToken = token.split(" ")[1] ?? "";
+    if (!token) {
+        return res.status(400).json({ msg: "No token provided" })
+    };
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
@@ -29,6 +25,6 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
             next();
         }
     } catch (error) {
-        res.status(401).json({ msg: "Permission denied" })
+        return res.status(401).json({ msg: "Permission denied" })
     }
 }
