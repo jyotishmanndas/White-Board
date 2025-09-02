@@ -1,3 +1,4 @@
+import { Pi } from 'lucide-react';
 import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import { Drawable } from 'roughjs/bin/core';
@@ -8,7 +9,7 @@ type Shape = {
     type: ShapeType;
     drawable: Drawable;
 };
-export function Draw(canvas: HTMLCanvasElement) {
+export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
     const ctx = canvas.getContext("2d");
     const rc = rough.canvas(canvas)
     let existingShapes: Shape[] = [];
@@ -26,9 +27,19 @@ export function Draw(canvas: HTMLCanvasElement) {
         const currentY = e.clientY - canvas.getBoundingClientRect().top;
         const width = currentX - startX;
         const height = currentY - startY;
-        const shape = rc.generator.rectangle(startX, startY, width, height, { stroke: "white" });
         // existingShapes.push({ type: "Rectangle", x: startX, y: startY, width, height, shape });
-        existingShapes.push({ type: "Rectangle", drawable: shape })
+        if (chooseShapes == "square") {
+            const shape = rc.generator.rectangle(startX, startY, width, height, { stroke: "white" });
+            existingShapes.push({ type: "Rectangle", drawable: shape })
+        } else if (chooseShapes == "circle") {
+            const centerX = startX + width / 2;
+            const centerY = startY + height / 2;
+            const diameter = Math.max(Math.abs(width), Math.abs(height));
+            // const shape = rc.generator.circle(centerX, centerY, diameter, { stroke: "white" });
+            ctx.beginPath();
+            const shape = rc.generator.circle(centerX, centerY, diameter, { stroke: "white" });
+            existingShapes.push({ type: "Circle", drawable: shape })
+        }
     });
     canvas.addEventListener("mousedown", (e) => {
         clicked = true;
@@ -48,11 +59,20 @@ export function Draw(canvas: HTMLCanvasElement) {
             // ctx.clearRect(0, 0, canvas.width, canvas.height);
             // ctx.fillRect(startX, startY, width, height);
             // ctx.fillStyle = "rgba(0, 0, 0)";
-            renderShapes(existingShapes, ctx, canvas, rc)
             // ctx.strokeStyle = "rgba(255, 255, 255)"
             // ctx.strokeRect(startX, startY, width, height);
-            const preview = rc.generator.rectangle(startX, startY, width, height, { stroke: "white" });
-            rc.draw(preview);
+            renderShapes(existingShapes, ctx, canvas, rc)
+            if (chooseShapes == "square") {
+                const preview = rc.generator.rectangle(startX, startY, width, height, { stroke: "white" });
+                rc.draw(preview);
+            } else if (chooseShapes == "circle") {
+                // const preview = rc.generator.circle(startX, startY, width / 2, { stroke: "white" });
+                const centerX = startX + width / 2;
+                const centerY = startY + height / 2;
+                const diameter = Math.max(Math.abs(width), Math.abs(height));
+                const preview = rc.generator.circle(centerX, centerY, diameter, { stroke: "white" });
+                rc.draw(preview);
+            }
         }
     });
 };

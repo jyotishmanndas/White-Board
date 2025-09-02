@@ -7,20 +7,21 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/component
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [chooseShapes, setChooseShapes] = useState("square")
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
     useEffect(() => {
         setDimensions({ width: window.innerWidth, height: window.innerHeight })
         if (canvasRef.current) {
-            Draw(canvasRef.current)
+            Draw(canvasRef.current, chooseShapes)
         }
-    }, [canvasRef]);
+    }, [canvasRef, chooseShapes]);
 
     return (
         <div className="flex justify-center relative">
             <div className="absolute flex justify-center items-center gap-6 h-12 mt-5 rounded-md w-72 bg-[#232329]">
                 <Tooltip delayDuration={30}>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger asChild onClick={() => setChooseShapes("square")}>
                         <Square className="w-5 h-5" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
@@ -28,7 +29,7 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip delayDuration={30}>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger asChild onClick={() => setChooseShapes("circle")}>
                         <Circle className="w-5 h-5" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
@@ -36,7 +37,7 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip delayDuration={30}>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger asChild onClick={() => setChooseShapes("pencil")}>
                         <Pencil className="w-5 h-5" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
@@ -44,7 +45,7 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip delayDuration={30}>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger asChild onClick={() => setChooseShapes("arrow")}>
                         <MoveRight className="w-5 h-5" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
