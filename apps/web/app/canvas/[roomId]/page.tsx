@@ -4,10 +4,11 @@ import { Draw } from "@/components/draw";
 import { Circle, MoveRight, Pencil, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [chooseShapes, setChooseShapes] = useState("square")
+    const [chooseShapes, setChooseShapes] = useState("")
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
     useEffect(() => {
@@ -19,10 +20,15 @@ export default function Canvas() {
 
     return (
         <div className="flex justify-center relative">
-            <div className="absolute flex justify-center items-center gap-6 h-12 mt-5 rounded-md w-72 bg-[#232329]">
+            <div className="absolute flex justify-center items-center gap-4 h-12 mt-5 rounded-md w-72 bg-[#232329]">
                 <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("square")}>
-                        <Square className="w-5 h-5" />
+                        <div className={cn(
+                            "p-2 rounded-md flex items-center justify-center",
+                            chooseShapes == "square" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                        )}>
+                            <Square className="w-5 h-5 text-white" />
+                        </div>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                         Square
@@ -30,7 +36,12 @@ export default function Canvas() {
                 </Tooltip>
                 <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("circle")}>
-                        <Circle className="w-5 h-5" />
+                        <div className={cn(
+                            "p-2 rounded-md flex items-center justify-center",
+                            chooseShapes == "circle" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                        )}>
+                            <Circle className="w-5 h-5" />
+                        </div>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                         Circle
@@ -38,7 +49,13 @@ export default function Canvas() {
                 </Tooltip>
                 <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("pencil")}>
-                        <Pencil className="w-5 h-5" />
+                        <div className={cn(
+                            "p-2 rounded-md flex items-center justify-center",
+                            chooseShapes == "pencil" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                        )}>
+                            <Pencil className="w-5 h-5" />
+                        </div>
+
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                         Pencil
@@ -46,7 +63,12 @@ export default function Canvas() {
                 </Tooltip>
                 <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("arrow")}>
-                        <MoveRight className="w-5 h-5" />
+                        <div className={cn(
+                            "p-2 rounded-md flex items-center justify-center",
+                            chooseShapes == "arrow" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                        )}>
+                            <MoveRight className="w-5 h-5" />
+                        </div>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                         arrow
