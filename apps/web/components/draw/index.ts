@@ -3,10 +3,11 @@ import { RoughCanvas } from 'roughjs/bin/canvas';
 import { Drawable } from 'roughjs/bin/core';
 
 type ShapeType = "Rectangle" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text";
-
+// type PencilShape = { type: "Pencil"; points: { x: number; y: number }[] };
 type Shape = {
     type: ShapeType;
-    drawable: Drawable;
+    drawable?: Drawable;
+    points?: { x: number; y: number }[];
 };
 export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
     const ctx = canvas.getContext("2d");
@@ -39,6 +40,8 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
             ctx.beginPath();
             const shape = rc.generator.line(startX, startY, currentX, currentY, { stroke: "white" });
             existingShapes.push({ type: "Line", drawable: shape })
+        } else if (chooseShapes === "pencil") {
+
         }
     });
     canvas.addEventListener("mousedown", (e) => {
@@ -47,6 +50,13 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
         // startY = e.clientY;
         startX = e.clientX - canvas.getBoundingClientRect().left;
         startY = e.clientY - canvas.getBoundingClientRect().top;
+
+        if (chooseShapes === "pencil") {
+            existingShapes.push({
+                type: "Pencil",
+                points: [{ x: startX, y: startY }]
+            });
+        }
     })
     canvas.addEventListener("mousemove", (e) => {
         if (clicked) {
@@ -67,6 +77,11 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
             } else if (chooseShapes === "line") {
                 const preview = rc.generator.line(startX, startY, currentX, currentY, { stroke: "white" });
                 rc.draw(preview);
+            } else if (chooseShapes === "pencil") {
+                const pencilShape = existingShapes[existingShapes.length - 1];
+                if (pencilShape && pencilShape.type === "Pencil" && pencilShape.points) {
+                    pencilShape.points.push({ x: currentX, y: currentY });
+                }
             }
         }
     });
@@ -76,16 +91,38 @@ function renderShapes(existingShapes: Shape[], ctx: CanvasRenderingContext2D, ca
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgba(0, 0, 0)"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // existingShapes.forEach(shape => {
+    //     // switch (shape.type) {
+    //     //     case "Rectangle":
+    //     //         //    ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
+    //     //         // ctx.strokeStyle = "rgba(255, 255, 255)"
+    //     //         // ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+    //     //         rc.rectangle(shape.x, shape.y, shape.width, shape.height, { stroke: "white" })
+    //     //         break;
+    //     //     // Handle other shapes...
+    //     // }
+    //     rc.draw(shape.drawable);
+    // });
+
     existingShapes.forEach(shape => {
-        // switch (shape.type) {
-        //     case "Rectangle":
-        //         //    ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
-        //         // ctx.strokeStyle = "rgba(255, 255, 255)"
-        //         // ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
-        //         rc.rectangle(shape.x, shape.y, shape.width, shape.height, { stroke: "white" })
-        //         break;
-        //     // Handle other shapes...
-        // }
-        rc.draw(shape.drawable);
+        if (shape.type === "Pencil" && shape.points) {
+            ctx.beginPath();
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 2;
+
+            for (let i = 1; i < shape.points.length; i++) {
+                let p1 = shape.points[i - 1];
+                let p2 = shape.points[i];
+                if (p1 && p2) {
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                }
+            }
+
+            ctx.stroke();
+        } else {
+            // normal rough.js shapes
+            if (shape.drawable) rc.draw(shape.drawable);
+        }
     });
 }

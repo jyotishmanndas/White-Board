@@ -1,7 +1,7 @@
 "use client";
 
 import { Draw } from "@/components/draw";
-import { Circle, Minus, MoveRight, Pencil, Square } from "lucide-react";
+import { Circle, Minus, MoveRight, Pencil, Slash, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils";
@@ -20,7 +20,7 @@ export default function Canvas() {
 
     return (
         <div className="flex justify-center relative">
-            <div className="absolute flex justify-center items-center gap-4 h-12 mt-5 rounded-md w-72 bg-[#232329]">
+            <div className="absolute flex justify-center items-center gap-3 h-12 mt-5 rounded-md w-72 bg-[#232329]">
                 <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("square")}>
                         <div className={cn(
@@ -48,20 +48,6 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip delayDuration={30}>
-                    <TooltipTrigger asChild onClick={() => setChooseShapes("pencil")}>
-                        <div className={cn(
-                            "p-2 rounded-md flex items-center justify-center",
-                            chooseShapes == "pencil" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
-                        )}>
-                            <Pencil className="w-5 h-5" />
-                        </div>
-
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                        Pencil
-                    </TooltipContent>
-                </Tooltip>
-                <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("arrow")}>
                         <div className={cn(
                             "p-2 rounded-md flex items-center justify-center",
@@ -78,13 +64,27 @@ export default function Canvas() {
                     <TooltipTrigger asChild onClick={() => setChooseShapes("line")}>
                         <div className={cn(
                             "p-2 rounded-md flex items-center justify-center",
-                            chooseShapes == "arrow" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                            chooseShapes == "line" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
                         )}>
                             <Minus className="w-5 h-5" />
                         </div>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                         line
+                    </TooltipContent>
+                </Tooltip>
+                <Tooltip delayDuration={30}>
+                    <TooltipTrigger asChild onClick={() => setChooseShapes("pencil")}>
+                        <div className={cn(
+                            "p-2 rounded-md flex items-center justify-center",
+                            chooseShapes == "pencil" ? "bg-[#403E6A]" : "hover:bg-[#4a486296]"
+                        )}>
+                            <Pencil className="w-5 h-5" />
+                        </div>
+
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                        Pencil
                     </TooltipContent>
                 </Tooltip>
             </div>
