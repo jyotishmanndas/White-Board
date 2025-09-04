@@ -40,8 +40,29 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
             ctx.beginPath();
             const shape = rc.generator.line(startX, startY, currentX, currentY, { stroke: "white" });
             existingShapes.push({ type: "Line", drawable: shape })
-        } else if (chooseShapes === "pencil") {
+        } else if (chooseShapes === "arrow") {
+            ctx.beginPath();
+            let headlen = 10;
+            let dx = currentX - startX;
+            let dy = currentY - startY;
+            let angle = Math.atan2(dy, dx);
 
+            // line
+            ctx.moveTo(startX, startY)
+            ctx.lineTo(currentX, currentY);
+
+            ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(currentX, currentY);
+            ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+            // existingShapes.push({type: "Arrow", drawable: ctx})
+        } else if (chooseShapes === "triangle") {
+            ctx.beginPath();
+            ctx.moveTo(startX + width / 2, startY);
+            ctx.lineTo(startX, startY + height);
+            ctx.lineTo(startX + width, startY + height);
+            ctx.closePath();
+            ctx.stroke();
         }
     });
     canvas.addEventListener("mousedown", (e) => {
@@ -82,6 +103,28 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
                 if (pencilShape && pencilShape.type === "Pencil" && pencilShape.points) {
                     pencilShape.points.push({ x: currentX, y: currentY });
                 }
+            } else if (chooseShapes === "arrow") {
+                ctx.beginPath();
+                let headlen = 10;
+                let dx = currentX - startX;
+                let dy = currentY - startY;
+                let angle = Math.atan2(dy, dx);
+
+                // line
+                ctx.moveTo(startX, startY)
+                ctx.lineTo(currentX, currentY);
+
+                ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(currentX, currentY);
+                ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
+                ctx.stroke();
+            } else if (chooseShapes === "triangle") {
+                ctx.beginPath();
+                ctx.moveTo(startX + width / 2, startY);
+                ctx.lineTo(startX, startY + height);
+                ctx.lineTo(startX + width, startY + height);
+                ctx.closePath();
+                ctx.stroke();
             }
         }
     });
