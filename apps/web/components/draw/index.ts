@@ -33,53 +33,74 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
             const width = currentX - startX;
             const height = currentY - startY;
 
-            renderShapes(existingShapes, ctx, canvas)
-            if (chooseShapes === "square") {
-                ctx.strokeRect(startX, startY, width, height);
-            } else if (chooseShapes === "circle") {
-                const x = Math.min(startX, currentX);
-                const y = Math.min(startY, currentY);
-                const width = Math.abs(currentX - startX);
-                const height = Math.abs(currentY - startY);
+            renderShapes(existingShapes, ctx, canvas);
 
-                const centerX = x + width / 2;
-                const centerY = y + height / 2;
-
-                ctx.beginPath();
-                ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
-                ctx.stroke();
-            } else if (chooseShapes === "line") {
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(currentX, currentY);
-                ctx.stroke()
-            } else if (chooseShapes === "pencil") {
-                const pencilShape = existingShapes[existingShapes.length - 1];
-                if (pencilShape && pencilShape.type === "Pencil" && pencilShape.points) {
-                    pencilShape.points.push({ x: currentX, y: currentY });
+            switch (chooseShapes) {
+                case "square": {
+                    ctx.strokeRect(startX, startY, width, height);
                 }
-            } else if (chooseShapes === "arrow") {
-                ctx.beginPath();
-                let headlen = 10;
-                let dx = currentX - startX;
-                let dy = currentY - startY;
-                let angle = Math.atan2(dy, dx);
+                    break;
 
-                // line
-                ctx.moveTo(startX, startY)
-                ctx.lineTo(currentX, currentY);
+                case "circle": {
+                    const x = Math.min(startX, currentX);
+                    const y = Math.min(startY, currentY);
+                    const width = Math.abs(currentX - startX);
+                    const height = Math.abs(currentY - startY);
 
-                ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
-                ctx.moveTo(currentX, currentY);
-                ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
-                ctx.stroke();
-            } else if (chooseShapes === "triangle") {
-                ctx.beginPath();
-                ctx.moveTo(startX + width / 2, startY);
-                ctx.lineTo(startX, startY + height);
-                ctx.lineTo(startX + width, startY + height);
-                ctx.closePath();
-                ctx.stroke();
+                    const centerX = x + width / 2;
+                    const centerY = y + height / 2;
+
+                    ctx.beginPath();
+                    ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+                    break;
+
+                case "line": {
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke()
+                }
+                    break;
+
+                case "pencil": {
+                    const pencilShape = existingShapes[existingShapes.length - 1];
+                    if (pencilShape && pencilShape.type === "Pencil" && pencilShape.points) {
+                        pencilShape.points.push({ x: currentX, y: currentY });
+                    }
+                }
+                    break;
+
+                case "arrow": {
+                    ctx.beginPath();
+                    let headlen = 10;
+                    let dx = currentX - startX;
+                    let dy = currentY - startY;
+                    let angle = Math.atan2(dy, dx);
+
+                    // line
+                    ctx.moveTo(startX, startY)
+                    ctx.lineTo(currentX, currentY);
+
+                    ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
+                    ctx.moveTo(currentX, currentY);
+                    ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
+                    ctx.stroke();
+                }
+                    break;
+                    
+                case "triangle": {
+                    ctx.beginPath();
+                    ctx.moveTo(startX + width / 2, startY);
+                    ctx.lineTo(startX, startY + height);
+                    ctx.lineTo(startX + width, startY + height);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                    break;
+                default:
+                    break;
             }
         }
     });
