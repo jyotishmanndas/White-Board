@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod"
+import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { signUpSchema } from "@workspace/zod-validator/zod";
 import { useForm } from "react-hook-form";
@@ -12,12 +12,12 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Eye, EyeClosed, EyeOff, Loader } from "lucide-react";
 import { toast } from "sonner";
 
 export function SignUpForm() {
-
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
     const form = useForm<z.infer<typeof signUpSchema>>({
@@ -32,7 +32,7 @@ export function SignUpForm() {
     async function onSubmit(values: z.infer<typeof signUpSchema>) {
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:3000/signup", values);
+            const res = await axios.post("http://localhost:3001/signup", values);
             const token = res.data.token;
             if (token) {
                 localStorage.setItem("token", token);
@@ -44,15 +44,17 @@ export function SignUpForm() {
             if (axios.isAxiosError(error) && error.response?.status == 400) {
                 toast("Email already Registered", {
                     description: "This email is already in use. Please try signing in or using a different email."
-                })
+                });
+                form.reset();
             } else {
                 toast("Uh oh! Something went wrong.", {
                     description: "There was a problem with your request.",
-                })
+                });
+                form.reset();
             }
         } finally {
-            setLoading(false)
-        };
+            setLoading(false);
+        }
     }
     return (
         <Card>
@@ -73,7 +75,7 @@ export function SignUpForm() {
                                     <FormItem>
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="jhon doe" {...field} />
+                                            <Input type="text" placeholder="jhon doe" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -86,7 +88,7 @@ export function SignUpForm() {
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="jhondoe@example.com" {...field} />
+                                            <Input type="email" placeholder="jhondoe@example.com" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -99,7 +101,12 @@ export function SignUpForm() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="******" {...field} />
+                                            <div className="relative flex items-center">
+                                                <Input type={showPassword ? "text" : "password"} placeholder="******" {...field} />
+                                                <button type="button" className="absolute right-2 " onClick={() => setShowPassword((prev) => !prev)}>
+                                                    <span>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</span>
+                                                </button>
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

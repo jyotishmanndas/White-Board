@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod"
+import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { signInschema } from "@workspace/zod-validator/zod";
 import { useForm } from "react-hook-form";
@@ -12,12 +12,12 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 import { toast } from "sonner";
 
 export function SignInForm() {
-
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
     const form = useForm<z.infer<typeof signInschema>>({
@@ -32,7 +32,7 @@ export function SignInForm() {
     async function onSubmit(values: z.infer<typeof signInschema>) {
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:3000/signin", values);
+            const res = await axios.post("http://localhost:3001/signin", values);
             const token = res.data.token;
             if (token) {
                 localStorage.setItem("token", token);
@@ -42,16 +42,26 @@ export function SignInForm() {
             }
         } catch (error) {
             console.error("Error during sign in:", error);
-            if (axios.isAxiosError(error) && error.response?.status == 400) {
-                toast("Invalid Passord")
-            } else {
+            if (axios.isAxiosError(error) && error.response?.status == 404) {
+                toast("User does not exist with this email", {
+                    description: "Please check the email you entered or sign up for a new account."
+                });
+                form.reset();
+            } else if (axios.isAxiosError(error) && error.response?.status == 401) {
+                toast("Invalid Password", {
+                    description: "The password you entered is incorrect. Please try again."
+                });
+                form.reset();
+            }
+            else {
                 toast("Uh oh! Something went wrong.", {
                     description: "There was a problem with your request.",
-                })
+                });
+                form.reset();
             }
         } finally {
             setLoading(false);
-        };
+        }
     }
     return (
         <Card>
@@ -72,7 +82,7 @@ export function SignInForm() {
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="jhondoe@example.com" {...field} />
+                                            <Input type="email" placeholder="jhondoe@example.com" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -85,7 +95,12 @@ export function SignInForm() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="******" {...field} />
+                                            <div className="relative flex items-center">
+                                                <Input type={showPassword ? "text" : "password"} placeholder="******" {...field} />
+                                                <button type="button" className="absolute right-2" onClick={() => setShowPassword((prev) => !prev)}>
+                                                    <span>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</span>
+                                                </button>
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

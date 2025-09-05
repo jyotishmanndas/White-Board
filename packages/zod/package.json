@@ -11,14 +11,14 @@
     "build": "tsc -b"
   },
   "devDependencies": {
-    "@workspace/typescript-config": "workspace:*",
-     "@types/node": "^20"
+    "@types/node": "^20",
+    "@workspace/typescript-config": "workspace:*"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "zod": "^3.25.67"
+    "zod": "^4.1.5"
   }
 }

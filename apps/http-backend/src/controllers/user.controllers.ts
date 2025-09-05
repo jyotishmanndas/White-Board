@@ -30,7 +30,7 @@ export const userSignup = async (req: Request, res: Response) => {
 
         const userId = user.id;
         const token = jwt.sign({ userId }, JWT_SECRET);
-        return res.json({ token })
+        return res.status(200).json({ msg: "User created successfully", token })
     } catch (error) {
         console.error("Error creating user:", error);
         return res.status(500).json({ msg: "Internal server error" });
@@ -38,33 +38,30 @@ export const userSignup = async (req: Request, res: Response) => {
 };
 
 export const userSignIn = async (req: Request, res: Response) => {
-    const result = signInschema.safeParse(req.body);
-    if (!result.success) {
-        return res.status(400).json({ msg: "Invalid input" });
-    };
-
     try {
+        const result = signInschema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ msg: "Invalid input" });
+        };
+
         const existingUser = await prisma.user.findUnique({
             where: { email: result.data.email }
         });
+        if (!existingUser) {
+            return res.status(404).json({ msg: "User does not exist with this email" });
+        };
 
-        const userId = existingUser?.id;
+        const isPasswordValid = await bcrypt.compare(result.data.password, existingUser.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ msg: "Invalid password" });
+        };
 
-        if (existingUser) {
-            const isPasswordValid = await bcrypt.compare(result.data.password, existingUser.password);
+        const userId = existingUser.id;
 
-            if (!isPasswordValid) {
-                res.status(400).json({ msg: "Invalid password" });
-            } else {
-                const token = jwt.sign({ userId }, JWT_SECRET);
-                res.json({ token });
-            };
-        }
-        else {
-            res.status(400).json({ msg: "User does not exist with this email" });
-        }
+        const token = jwt.sign({ userId }, JWT_SECRET);
+        return res.status(200).json({ msg: "Sign in successful", token });
     } catch (error) {
         console.error("Error signing in user:", error);
-        res.status(500).json({ msg: "Internal server error" });
+        return res.status(500).json({ msg: "Internal server error" });
     };
 }

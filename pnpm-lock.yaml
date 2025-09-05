@@ -268,8 +268,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^4.1.5
+        version: 4.1.5
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.0.8
@@ -302,8 +302,8 @@ importers:
   packages/zod:
     dependencies:
       zod:
-        specifier: ^3.25.67
-        version: 3.25.67
+        specifier: ^4.1.5
+        version: 4.1.5
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -3081,11 +3081,11 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
-
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+
+  zod@4.1.5:
+    resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
 
 snapshots:
 
@@ -6132,6 +6132,6 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.24.2: {}
-
   zod@3.25.67: {}
+
+  zod@4.1.5: {}
