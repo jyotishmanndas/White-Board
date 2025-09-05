@@ -21,7 +21,7 @@ export const createRoom = async (req: Request, res: Response) => {
         });
 
         if (room) {
-            return res.status(400).json({ msg: "Room already exists with this slug" })
+            return res.status(409).json({ msg: "Room already exists with this slug" })
         };
         const newRoom = await prisma.room.create({
             data: {
@@ -35,7 +35,7 @@ export const createRoom = async (req: Request, res: Response) => {
             }
         });
         return res.status(200).json({
-            msg: "Room created successfully", newRoom: {
+            msg: "Room created successfully", room: {
                 id: newRoom.id,
                 slug: newRoom.slug,
                 createdAt: newRoom.createdAt
@@ -68,7 +68,7 @@ export const joinRoom = async (req: Request, res: Response) => {
             include: { members: true }
         });
         if (!room) {
-            return res.status(400).json({ msg: "Room not found" })
+            return res.status(404).json({ msg: "Room not found" })
         };
 
         const isAlreadyMember = room.members.find(member => member.userId === user.id);
@@ -77,7 +77,7 @@ export const joinRoom = async (req: Request, res: Response) => {
             await prisma.roomMember.create({
                 data: {
                     roomId: room.id,
-                    userId: user.id
+                    userId: user.id,
                 }
             })
         }
