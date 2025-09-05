@@ -5,11 +5,26 @@ import { Circle, Diamond, Minus, MoveRight, Pencil, Slash, Square, Triangle } fr
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils";
+import { useWebsocket } from "@/hooks/websocket";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [chooseShapes, setChooseShapes] = useState("")
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+    const [chooseShapes, setChooseShapes] = useState("");
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const { socket, connected } = useWebsocket();
+    const params = useParams();
+    const roomId = params.roomId as string;
+
+    useEffect(() => {
+        if (!socket || !connected) return;
+
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: "join_room", roomCode: roomId }));
+            toast.success("Websocket connected successfully ")
+        }
+    }, [socket, connected])
 
     useEffect(() => {
         setDimensions({ width: window.innerWidth, height: window.innerHeight })
@@ -47,7 +62,7 @@ export default function Canvas() {
                         Circle
                     </TooltipContent>
                 </Tooltip>
-                 <Tooltip delayDuration={30}>
+                <Tooltip delayDuration={30}>
                     <TooltipTrigger asChild onClick={() => setChooseShapes("triangle")}>
                         <div className={cn(
                             "p-2 rounded-md flex items-center justify-center",
