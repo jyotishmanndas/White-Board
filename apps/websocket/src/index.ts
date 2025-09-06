@@ -50,7 +50,7 @@ wss.on('connection', function connection(ws, request) {
 
             switch (message.type) {
                 case "join_room": {
-                    const roomId = message.roomCode; 
+                    const roomId = message.roomCode;
                     const user = users.find(user => user.ws === ws);
                     if (user && !user.rooms.includes(roomId)) {
                         user.rooms.push(roomId);
@@ -75,15 +75,22 @@ wss.on('connection', function connection(ws, request) {
 
                 case "send_message": {
                     const roomId = message.roomCode;
-                    const text = message.messageText;
+                    const shapeType = message.shape;
+                    const x = message.x;
+                    const y = message.y;
+                    const width = message.width;
+                    const height = message.height;
 
                     users.forEach(otherUser => {
                         if (otherUser.rooms.includes(roomId)) {     //&& otherUser.userId !== userId
                             otherUser.ws.send(JSON.stringify({
                                 type: "message",
-                                message: text,
+                                shape: shapeType,
+                                x,
+                                y,
+                                width,
+                                height,
                                 roomId,
-                                userId
                             }));
                         }
                     });

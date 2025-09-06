@@ -1,6 +1,9 @@
+import axios from "axios";
+import { toast } from "sonner";
+
 type ShapeType = { type: "Rectangle" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, points?: { x: number; y: number }[] };
 
-export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
+export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: WebSocket | null, roomId: string) {
     const ctx = canvas.getContext("2d");
     let existingShapes: ShapeType[] = [];
     if (!ctx) return;
@@ -8,6 +11,25 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
     let clicked = false;
     let startX = 0;
     let startY = 0;
+
+    // if (!socket) {
+    //     toast.error("disconnect")
+    //     return
+    // };
+
+    // if (socket.readyState === WebSocket.OPEN) {
+    //     socket.onmessage = (event) => {
+    //         const data = JSON.parse(event.data);
+    //         existingShapes.push({
+    //             type: data.shape,
+    //             x: data.x,
+    //             y: data.y,
+    //             width: data.width,
+    //             height: data.height
+    //         });
+    //         renderShapes(existingShapes, ctx, canvas);
+    //     }
+    // }
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true;
@@ -89,7 +111,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
                     ctx.stroke();
                 }
                     break;
-                    
+
                 case "triangle": {
                     ctx.beginPath();
                     ctx.moveTo(startX + width / 2, startY);
@@ -113,6 +135,9 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string) {
         const height = currentY - startY;
         if (chooseShapes === "square") {
             existingShapes.push({ type: "Rectangle", x: startX, y: startY, width, height });
+            // if (socket?.readyState === WebSocket.OPEN) {
+            //     socket.send(JSON.stringify({ type: "send_message", shape: "square", x: startX, y: startY, height: height, width: width, roomCode: roomId }));
+            // }
         } else if (chooseShapes === "circle") {
             const x = Math.min(startX, currentX);
             const y = Math.min(startY, currentY);

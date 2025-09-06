@@ -22,14 +22,14 @@ export default function Canvas() {
 
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: "join_room", roomCode: roomId }));
-            toast.success("Websocket connected successfully ")
+            // toast.success("Websocket connected")
         }
     }, [socket, connected])
 
     useEffect(() => {
         setDimensions({ width: window.innerWidth, height: window.innerHeight })
         if (canvasRef.current) {
-            Draw(canvasRef.current, chooseShapes)
+            Draw(canvasRef.current, chooseShapes, socket, roomId)
         }
     }, [canvasRef, chooseShapes]);
 
@@ -129,7 +129,7 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
             </div>
-            <canvas width={dimensions.width} height={dimensions.height} ref={canvasRef}></canvas>
+            <canvas className="cursor-crosshair" width={dimensions.width} height={dimensions.height} ref={canvasRef}></canvas>
         </div>
     )
 }
