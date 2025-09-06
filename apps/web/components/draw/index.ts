@@ -3,7 +3,6 @@ import { toast } from "sonner";
 
 type ShapeType = { type: "Square" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, points?: { x: number; y: number }[] };
 
-
 export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: WebSocket | null, roomId: string) {
     const ctx = canvas.getContext("2d");
     let existingShapes: ShapeType[] = [];
@@ -36,14 +35,18 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
     if (savedShapes) {
         existingShapes = JSON.parse(savedShapes);
         renderShapes(existingShapes, ctx, canvas);
-    }
+    };
+
+    function saveShapes() {
+        localStorage.setItem("shapes", JSON.stringify(existingShapes));
+    };
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true;
         startX = e.clientX - canvas.getBoundingClientRect().left;
         startY = e.clientY - canvas.getBoundingClientRect().top;
 
-        if (chooseShapes === "pencil") {
+        if (chooseShapes === "Pencil") {
             existingShapes.push({
                 type: "Pencil",
                 x: 0,
@@ -65,12 +68,12 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             renderShapes(existingShapes, ctx, canvas);
 
             switch (chooseShapes) {
-                case "square": {
+                case "Square": {
                     ctx.strokeRect(startX, startY, width, height);
                 }
                     break;
 
-                case "circle": {
+                case "Circle": {
                     const x = Math.min(startX, currentX);
                     const y = Math.min(startY, currentY);
                     const width = Math.abs(currentX - startX);
@@ -85,7 +88,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                 }
                     break;
 
-                case "line": {
+                case "Line": {
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
                     ctx.lineTo(currentX, currentY);
@@ -93,7 +96,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                 }
                     break;
 
-                case "pencil": {
+                case "Pencil": {
                     const pencilShape = existingShapes[existingShapes.length - 1];
                     if (pencilShape && pencilShape.type === "Pencil" && pencilShape.points) {
                         pencilShape.points.push({ x: currentX, y: currentY });
@@ -101,7 +104,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                 }
                     break;
 
-                case "arrow": {
+                case "Arrow": {
                     ctx.beginPath();
                     let headlen = 10;
                     let dx = currentX - startX;
@@ -119,7 +122,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                 }
                     break;
 
-                case "triangle": {
+                case "Triangle": {
                     ctx.beginPath();
                     ctx.moveTo(startX + width / 2, startY);
                     ctx.lineTo(startX, startY + height);
@@ -128,15 +131,12 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                     ctx.stroke();
                 }
                     break;
+
                 default:
                     break;
             }
         }
     });
-
-    function saveShapes() {
-        localStorage.setItem("shapes", JSON.stringify(existingShapes));
-    }
 
     canvas.addEventListener("mouseup", (e) => {
         clicked = false;
@@ -145,7 +145,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
         const width = currentX - startX;
         const height = currentY - startY;
         const token = localStorage.getItem("token");
-        if (chooseShapes === "square") {
+        if (chooseShapes === "Square") {
             existingShapes.push({ type: "Square", x: startX, y: startY, width, height });
             saveShapes();
             // if (socket?.readyState === WebSocket.OPEN) {
@@ -162,7 +162,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
         }
-        if (chooseShapes === "circle") {
+        if (chooseShapes === "Circle") {
             const x = Math.min(startX, currentX);
             const y = Math.min(startY, currentY);
             const width = Math.abs(currentX - startX);
@@ -184,7 +184,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
         }
-        if (chooseShapes === "line") {
+        if (chooseShapes === "Line") {
             existingShapes.push({ type: "Line", x: startX, y: startY, width, height });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
@@ -198,7 +198,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
         }
-        if (chooseShapes === "arrow") {
+        if (chooseShapes === "Arrow") {
             existingShapes.push({ type: "Arrow", x: startX, y: startY, width, height });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
@@ -212,7 +212,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
         }
-        if (chooseShapes === "triangle") {
+        if (chooseShapes === "Triangle") {
             ctx.beginPath();
             ctx.moveTo(startX + width / 2, startY);
             ctx.lineTo(startX, startY + height);
@@ -229,6 +229,9 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             // }, { headers: { Authorization: token } })
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
+        }
+        if(chooseShapes === "Pencil"){
+            saveShapes()
         }
     });
 };
