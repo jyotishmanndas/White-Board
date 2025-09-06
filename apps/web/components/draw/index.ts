@@ -1,7 +1,8 @@
 import axios from "axios";
 import { toast } from "sonner";
 
-type ShapeType = { type: "Rectangle" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, points?: { x: number; y: number }[] };
+type ShapeType = { type: "Square" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, points?: { x: number; y: number }[] };
+
 
 export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: WebSocket | null, roomId: string) {
     const ctx = canvas.getContext("2d");
@@ -30,6 +31,12 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
     //         renderShapes(existingShapes, ctx, canvas);
     //     }
     // }
+
+    const savedShapes = localStorage.getItem("shapes");
+    if (savedShapes) {
+        existingShapes = JSON.parse(savedShapes);
+        renderShapes(existingShapes, ctx, canvas);
+    }
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true;
@@ -127,18 +134,35 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
         }
     });
 
+    function saveShapes() {
+        localStorage.setItem("shapes", JSON.stringify(existingShapes));
+    }
+
     canvas.addEventListener("mouseup", (e) => {
         clicked = false;
         const currentX = e.clientX - canvas.getBoundingClientRect().left;
         const currentY = e.clientY - canvas.getBoundingClientRect().top;
         const width = currentX - startX;
         const height = currentY - startY;
+        const token = localStorage.getItem("token");
         if (chooseShapes === "square") {
-            existingShapes.push({ type: "Rectangle", x: startX, y: startY, width, height });
+            existingShapes.push({ type: "Square", x: startX, y: startY, width, height });
+            saveShapes();
             // if (socket?.readyState === WebSocket.OPEN) {
             //     socket.send(JSON.stringify({ type: "send_message", shape: "square", x: startX, y: startY, height: height, width: width, roomCode: roomId }));
             // }
-        } else if (chooseShapes === "circle") {
+            // axios.post(`http://localhost:3001/shape`, {
+            //     type: "square",
+            //     roomId: roomId,
+            //     x: startX,
+            //     y: startY,
+            //     height: height,
+            //     width: width
+            // }, { headers: { Authorization: token } })
+            //     .then(e => console.log(e))
+            //     .catch(e => console.log(e))
+        }
+        if (chooseShapes === "circle") {
             const x = Math.min(startX, currentX);
             const y = Math.min(startY, currentY);
             const width = Math.abs(currentX - startX);
@@ -147,17 +171,64 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             const centerX = x + width / 2;
             const centerY = y + height / 2;
 
-            existingShapes.push({ type: "Circle", x: centerX, y: centerY, width, height })
-        } else if (chooseShapes === "line") {
-            existingShapes.push({ type: "Line", x: startX, y: startY, width, height })
-        } else if (chooseShapes === "arrow") {
-            existingShapes.push({ type: "Arrow", x: startX, y: startY, width, height })
-        } else if (chooseShapes === "triangle") {
+            existingShapes.push({ type: "Circle", x: centerX, y: centerY, width, height });
+            saveShapes();
+            // axios.post(`http://localhost:3001/shape`, {
+            //     type: "circle",
+            //     roomId: roomId,
+            //     x: centerX,
+            //     y: centerY,
+            //     height: height,
+            //     width: width
+            // }, { headers: { Authorization: token } })
+            //     .then(e => console.log(e))
+            //     .catch(e => console.log(e))
+        }
+        if (chooseShapes === "line") {
+            existingShapes.push({ type: "Line", x: startX, y: startY, width, height });
+            saveShapes();
+            // axios.post(`http://localhost:3001/shape`, {
+            //     type: "line",
+            //     roomId: roomId,
+            //     x: startX,
+            //     y: startY,
+            //     height: height,
+            //     width: width
+            // }, { headers: { Authorization: token } })
+            //     .then(e => console.log(e))
+            //     .catch(e => console.log(e))
+        }
+        if (chooseShapes === "arrow") {
+            existingShapes.push({ type: "Arrow", x: startX, y: startY, width, height });
+            saveShapes();
+            // axios.post(`http://localhost:3001/shape`, {
+            //     type: "arrow",
+            //     roomId: roomId,
+            //     x: startX,
+            //     y: startY,
+            //     height: height,
+            //     width: width
+            // }, { headers: { Authorization: token } })
+            //     .then(e => console.log(e))
+            //     .catch(e => console.log(e))
+        }
+        if (chooseShapes === "triangle") {
             ctx.beginPath();
             ctx.moveTo(startX + width / 2, startY);
             ctx.lineTo(startX, startY + height);
             ctx.lineTo(startX + width, startY + height);
-            existingShapes.push({ type: "Triangle", x: startX, y: startY, width, height })
+            existingShapes.push({ type: "Triangle", x: startX, y: startY, width, height });
+            saveShapes();
+            // axios.post(`http://localhost:3001/shape`, {
+            //     type: "triangle",
+            //     roomId: roomId,
+            //     x: startX,
+            //     y: startY,
+            //     height: height,
+            //     width: width
+            // }, { headers: { Authorization: token } })
+            //     .then(e => console.log(e))
+            //     .catch(e => console.log(e))
         }
     });
 };
@@ -168,7 +239,7 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     existingShapes.map(shape => {
         switch (shape.type) {
-            case "Rectangle":
+            case "Square":
                 ctx.strokeStyle = "rgba(255, 255, 255)"
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 break;
