@@ -132,7 +132,7 @@ export default function Canvas() {
                 </Tooltip>
             </div>
             <div className="absolute top-50 left-10">
-                <Button className="cursor-pointer" onClick={() => {
+                <Button type="button" className="cursor-pointer" onClick={() => {
                     const canvas = canvasRef.current;
                     if (!canvas) return;
 

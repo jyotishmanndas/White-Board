@@ -60,20 +60,35 @@ export function CreateRoom() {
 
             if (res.status === 200) {
                 form.reset();
-                toast.success(action === "create" ? "Room created successfully" : "Room joined successfully");
+                const serverMessage = res.data.msg;
+                toast.success(serverMessage);
+                // toast.success(action === "create" ? "Room created successfully" : "Room joined successfully");
                 router.push(`/canvas/${res.data.room.slug}`)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                if (error.response?.status === 404) {
-                    toast.error("Room not found");
-                } else if (error.response?.status === 409) {
-                    toast.error("Room already exists");
-                } else {
-                    toast.error("Something went wrong");
+                const status = error.response?.status;
+                const serverMessage = error.response?.data?.msg;
+                switch (status) {
+                    case 404:
+                        toast.error(serverMessage || "Room not found");
+                        break;
+                    case 409:
+                        toast.error(serverMessage || "Room already exists");
+                        break;
+                    case 400:
+                        toast.error(serverMessage || "Invalid room data");
+                        break;
+                    case 403:
+                        toast.error(serverMessage || "Access denied");
+                        break;
+                    default:
+                        toast.error(serverMessage || "Something went wrong. Please try again");
                 }
+            } else {
+                toast.error("Network error. Please check your connection.");
             }
-        }
+        };
     };
     return (
         <div className="flex flex-col justify-center items-center min-h-[30vh]">
