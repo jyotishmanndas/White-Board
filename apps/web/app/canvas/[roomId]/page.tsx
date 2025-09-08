@@ -9,10 +9,12 @@ import { useWebsocket } from "@/hooks/websocket";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
+import { Blue, Brown, Gray, Red, SeaGreen, Tulip } from "@/lib/color";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [chooseShapes, setChooseShapes] = useState("");
+    const [color, setColor] = useState(Gray)
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const { socket, connected } = useWebsocket();
     const params = useParams();
@@ -31,7 +33,7 @@ export default function Canvas() {
     useEffect(() => {
         setDimensions({ width: window.innerWidth, height: window.innerHeight })
         if (canvasRef.current) {
-            Draw(canvasRef.current, chooseShapes, socket, roomId)
+            Draw(canvasRef.current, chooseShapes, socket, roomId, color)
         };
     }, [canvasRef, chooseShapes]);
 
@@ -131,7 +133,7 @@ export default function Canvas() {
                     </TooltipContent>
                 </Tooltip>
             </div>
-            <div className="absolute top-50 left-10">
+            <div className="absolute top-50 left-10 bg-accent p-2 rounded-md">
                 <Button type="button" className="cursor-pointer" onClick={() => {
                     const canvas = canvasRef.current;
                     if (!canvas) return;
@@ -145,7 +147,16 @@ export default function Canvas() {
                     ctx.fillStyle = "black";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }}> Clear canva</Button>
+                <div className="h-40 w-28 rounded-md  flex flex-wrap gap-3 my-2 p-2">
+                    <div className={`size-5 p-5 rounded-md ${color === Gray && "border border-white"}`} style={{ backgroundColor: Gray }} onClick={() => setColor(Gray)}></div>
+                    <div className={`size-5 p-5 rounded-md ${color === Tulip && "border border-white"}`} style={{ backgroundColor: Tulip }} onClick={() => setColor(Tulip)}></div>
+                    <div className={`size-5 p-5 rounded-md ${color === SeaGreen && "border border-white"}`} style={{ backgroundColor: SeaGreen }} onClick={() => setColor(SeaGreen)}></div>
+                    <div className={`size-5 p-5 rounded-md ${color === Blue && "border border-white"}`} style={{ backgroundColor: Blue }} onClick={() => setColor(Blue)}></div>
+                    <div className={`size-5 p-5 rounded-md ${color === Brown && "border border-white"}`} style={{ backgroundColor: Brown }} onClick={() => setColor(Brown)}></div>
+                    <div className={`size-5 p-5 rounded-md ${color === Red && "border border-white"}`} style={{ backgroundColor: Red }} onClick={() => setColor(Red)}></div>
+                </div>
             </div>
+
             <canvas className="cursor-crosshair" width={dimensions.width} height={dimensions.height} ref={canvasRef}></canvas>
         </div>
     )

@@ -1,0 +1,7 @@
+export const Tulip = "rgb(255 131 131)"
+export const SeaGreen = "rgb(58 153 76)"
+export const Blue = "rgb(86 162 232)"
+export const Brown = "rgb(183 97 0)"
+export const Gray = "rgb(211 211 211)"
+export const Citron = "rgb(156 159 41)"
+export const Red = "rgb(99 41 36)"

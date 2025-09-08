@@ -1,9 +1,9 @@
 import axios from "axios";
 import { toast } from "sonner";
 
-type ShapeType = { type: "Square" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, points?: { x: number; y: number }[] };
+type ShapeType = { type: "Square" | "Circle" | "Line" | "Triangle" | "Arrow" | "Rhombus" | "Pencil" | "Eraser" | "Text", x: number, y: number, width: number, height: number, color: string, points?: { x: number; y: number }[] };
 
-export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: WebSocket | null, roomId: string) {
+export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: WebSocket | null, roomId: string, color: string) {
     const ctx = canvas.getContext("2d");
     let existingShapes: ShapeType[] = [];
     if (!ctx) return;
@@ -34,7 +34,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
     const savedShapes = localStorage.getItem("shapes");
     if (savedShapes) {
         existingShapes = JSON.parse(savedShapes);
-        renderShapes(existingShapes, ctx, canvas);
+        renderShapes(existingShapes, ctx, canvas, color);
     };
 
     function saveShapes() {
@@ -53,7 +53,8 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                 y: 0,
                 width: 0,
                 height: 0,
-                points: [{ x: startX, y: startY }]
+                points: [{ x: startX, y: startY }],
+                color: color
             });
         }
     });
@@ -65,11 +66,12 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             const width = currentX - startX;
             const height = currentY - startY;
 
-            renderShapes(existingShapes, ctx, canvas);
+            renderShapes(existingShapes, ctx, canvas, color);
 
             switch (chooseShapes) {
                 case "Square": {
                     ctx.strokeRect(startX, startY, width, height);
+                    ctx.strokeStyle = color;
                 }
                     break;
 
@@ -84,6 +86,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
 
                     ctx.beginPath();
                     ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
+                    ctx.strokeStyle = color;
                     ctx.stroke();
                 }
                     break;
@@ -92,6 +95,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
                     ctx.lineTo(currentX, currentY);
+                    ctx.strokeStyle = color;
                     ctx.stroke()
                 }
                     break;
@@ -118,6 +122,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                     ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
                     ctx.moveTo(currentX, currentY);
                     ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
+                    ctx.strokeStyle = color;
                     ctx.stroke();
                 }
                     break;
@@ -128,6 +133,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                     ctx.lineTo(startX, startY + height);
                     ctx.lineTo(startX + width, startY + height);
                     ctx.closePath();
+                    ctx.strokeStyle = color;
                     ctx.stroke();
                 }
                     break;
@@ -146,7 +152,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
         const height = currentY - startY;
         const token = localStorage.getItem("token");
         if (chooseShapes === "Square") {
-            existingShapes.push({ type: "Square", x: startX, y: startY, width, height });
+            existingShapes.push({ type: "Square", x: startX, y: startY, width, height, color: color });
             saveShapes();
             // if (socket?.readyState === WebSocket.OPEN) {
             //     socket.send(JSON.stringify({ type: "send_message", shape: "square", x: startX, y: startY, height: height, width: width, roomCode: roomId }));
@@ -171,7 +177,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             const centerX = x + width / 2;
             const centerY = y + height / 2;
 
-            existingShapes.push({ type: "Circle", x: centerX, y: centerY, width, height });
+            existingShapes.push({ type: "Circle", x: centerX, y: centerY, width, height, color: color });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
             //     type: "circle",
@@ -185,7 +191,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .catch(e => console.log(e))
         }
         if (chooseShapes === "Line") {
-            existingShapes.push({ type: "Line", x: startX, y: startY, width, height });
+            existingShapes.push({ type: "Line", x: startX, y: startY, width, height, color: color });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
             //     type: "line",
@@ -199,7 +205,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .catch(e => console.log(e))
         }
         if (chooseShapes === "Arrow") {
-            existingShapes.push({ type: "Arrow", x: startX, y: startY, width, height });
+            existingShapes.push({ type: "Arrow", x: startX, y: startY, width, height, color: color });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
             //     type: "arrow",
@@ -217,7 +223,7 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             ctx.moveTo(startX + width / 2, startY);
             ctx.lineTo(startX, startY + height);
             ctx.lineTo(startX + width, startY + height);
-            existingShapes.push({ type: "Triangle", x: startX, y: startY, width, height });
+            existingShapes.push({ type: "Triangle", x: startX, y: startY, width, height, color: color });
             saveShapes();
             // axios.post(`http://localhost:3001/shape`, {
             //     type: "triangle",
@@ -230,37 +236,37 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
             //     .then(e => console.log(e))
             //     .catch(e => console.log(e))
         }
-        if(chooseShapes === "Pencil"){
+        if (chooseShapes === "Pencil") {
             saveShapes()
         }
     });
 };
 
-function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, color: string) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgba(0, 0, 0)"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     existingShapes.map(shape => {
         switch (shape.type) {
             case "Square":
-                ctx.strokeStyle = "rgba(255, 255, 255)"
+                ctx.strokeStyle = color;
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 break;
             case "Circle":
-                ctx.strokeStyle = "rgba(255, 255, 255)"
+                ctx.strokeStyle = color;
                 ctx.beginPath();
                 ctx.ellipse(shape.x, shape.y, Math.abs(shape.width / 2), Math.abs(shape.height / 2), 0, 0, 2 * Math.PI);
                 ctx.stroke();
                 break;
             case "Line":
-                ctx.strokeStyle = "rgba(255, 255, 255)"
+                ctx.strokeStyle = color;
                 ctx.beginPath();
                 ctx.moveTo(shape.x, shape.y);
                 ctx.lineTo(shape.x + shape.width, shape.y + shape.height);
                 ctx.stroke();
                 break;
             case "Arrow":
-                ctx.strokeStyle = "rgba(255, 255, 255)"
+                ctx.strokeStyle = color;
                 ctx.beginPath();
                 let headlen = 10;
                 let dx = shape.width;
@@ -275,7 +281,7 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
                 ctx.stroke();
                 break;
             case "Triangle":
-                ctx.strokeStyle = "rgba(255, 255, 255)"
+                ctx.strokeStyle = color;
                 ctx.beginPath();
                 ctx.moveTo(shape.x + shape.width / 2, shape.y);
                 ctx.lineTo(shape.x, shape.y + shape.height);
@@ -285,7 +291,7 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
                 break;
             case "Pencil":
                 if (shape.points && shape.points.length > 1) {
-                    ctx.strokeStyle = "rgba(255, 255, 255)";
+                    ctx.strokeStyle = color;
                     ctx.beginPath();
                     ctx.lineWidth = 2;
 
