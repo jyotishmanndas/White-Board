@@ -70,8 +70,8 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
 
             switch (chooseShapes) {
                 case "Square": {
-                    ctx.strokeRect(startX, startY, width, height);
                     ctx.strokeStyle = color;
+                    ctx.strokeRect(startX, startY, width, height);
                 }
                     break;
 
@@ -85,8 +85,8 @@ export function Draw(canvas: HTMLCanvasElement, chooseShapes: string, socket: We
                     const centerY = y + height / 2;
 
                     ctx.beginPath();
-                    ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
                     ctx.strokeStyle = color;
+                    ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, 2 * Math.PI);
                     ctx.stroke();
                 }
                     break;
@@ -249,24 +249,24 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
     existingShapes.map(shape => {
         switch (shape.type) {
             case "Square":
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = shape.color;
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 break;
             case "Circle":
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = shape.color;
                 ctx.beginPath();
                 ctx.ellipse(shape.x, shape.y, Math.abs(shape.width / 2), Math.abs(shape.height / 2), 0, 0, 2 * Math.PI);
                 ctx.stroke();
                 break;
             case "Line":
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = shape.color;
                 ctx.beginPath();
                 ctx.moveTo(shape.x, shape.y);
                 ctx.lineTo(shape.x + shape.width, shape.y + shape.height);
                 ctx.stroke();
                 break;
             case "Arrow":
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = shape.color;
                 ctx.beginPath();
                 let headlen = 10;
                 let dx = shape.width;
@@ -281,7 +281,7 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
                 ctx.stroke();
                 break;
             case "Triangle":
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = shape.color;
                 ctx.beginPath();
                 ctx.moveTo(shape.x + shape.width / 2, shape.y);
                 ctx.lineTo(shape.x, shape.y + shape.height);
@@ -291,7 +291,7 @@ function renderShapes(existingShapes: ShapeType[], ctx: CanvasRenderingContext2D
                 break;
             case "Pencil":
                 if (shape.points && shape.points.length > 1) {
-                    ctx.strokeStyle = color;
+                    ctx.strokeStyle = shape.color;
                     ctx.beginPath();
                     ctx.lineWidth = 2;
 
