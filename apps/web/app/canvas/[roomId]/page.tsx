@@ -35,7 +35,7 @@ export default function Canvas() {
         if (canvasRef.current) {
             Draw(canvasRef.current, chooseShapes, socket, roomId, color)
         };
-    }, [canvasRef, chooseShapes]);
+    }, [canvasRef, chooseShapes, color]);
 
     return (
         <div className="flex justify-center relative">
@@ -141,11 +141,11 @@ export default function Canvas() {
                     const ctx = canvas.getContext("2d");
                     if (!ctx) return;
 
-                    localStorage.removeItem("shapes");
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    localStorage.removeItem("shapes");
 
-                    ctx.fillStyle = "black";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    // ctx.fillStyle = "black";
+                    // ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }}> Clear canva</Button>
                 <div className="h-40 w-28 rounded-md  flex flex-wrap gap-3 my-2 p-2">
                     <div className={`size-5 p-5 rounded-md ${color === Gray && "border border-white"}`} style={{ backgroundColor: Gray }} onClick={() => setColor(Gray)}></div>
